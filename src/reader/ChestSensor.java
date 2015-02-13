@@ -69,7 +69,7 @@ public class ChestSensor {
 		return rtn;
 	}
 
-	private void splitFilesByTime() {
+	private void splitFilesByTime(int gapMinute) {
 		BufferedReader br;
 		String data;
 		StringBuffer sb = new StringBuffer();
@@ -80,8 +80,6 @@ public class ChestSensor {
 		int count = -1;
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(wFileName)));
-			// BufferedWriter out = new BufferedWriter(new FileWriter(wFileName,
-			// true));
 			while ((data = br.readLine()) != null) {
 				String[] tmp = data.trim().split(",");
 				if (!tmp[0].equals("time")) {
@@ -92,13 +90,12 @@ public class ChestSensor {
 						day = tmp[9];
 						sb.append(data).append(LINEBREAK);
 						eTime = pTime;
-						// System.out.println("time1: " + pTime);
 					} else {
 						pTime = eTime;
 						eTime = tmp[0];
 						System.out.println("timeP_" + count + ": " + pTime);
 						System.out.println("timeE_" + count + ": " + eTime);
-						if (!compareTime(pTime, eTime)) {
+						if (!compareTime(pTime, eTime, gapMinute)) {
 							String fName = PATH + day + sTime.substring(0, 2) + "-" + eTime.substring(0, 2) + "_" + SUFFIX;
 							String toWrite = sb.toString();
 							writeMethod(fName,toWrite);
@@ -142,8 +139,6 @@ public class ChestSensor {
 		String toWrite;
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(rFileName)));
-			// BufferedWriter out = new BufferedWriter(new FileWriter(wFileName,
-			// true));
 			BufferedWriter out = new BufferedWriter(new FileWriter(wFileName));
 			out.write(HEAD);
 			out.newLine();
@@ -181,7 +176,7 @@ public class ChestSensor {
 		return true;
 	}
 
-	public static void writeMethod(String fileName, String toWrite) {
+	private void writeMethod(String fileName, String toWrite) {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
 			out.write(HEAD);
@@ -214,14 +209,15 @@ public class ChestSensor {
 	}
 
 	/**
-	 * Currently set 1 minute as Threshold
 	 *
 	 * @param sTime
 	 * @param eTime
+	 * @param gapMinute
+	 *            : split files based on this time
 	 * @return
 	 */
-	private boolean compareTime(String sTime, String eTime) {
-		if (getCalTime(eTime) - getCalTime(sTime) >= 60) {
+	private boolean compareTime(String sTime, String eTime, int gapMinute) {
+		if (getCalTime(eTime) - getCalTime(sTime) >= gapMinute * 60) {
 			return false;
 		} else {
 			return true;
@@ -248,11 +244,12 @@ public class ChestSensor {
 		br.close();
 		return processedData;
 	}
+
 	public static void main(String[] args) throws IOException {
 		String _rFileName = "chestsensor.9999.EQ02_3112228.F_10.txt";
 		ChestSensor _chestSensor = new ChestSensor(_rFileName);
 //		_chestSensor.getChestData(_rFileName);
 		_chestSensor.simpleProcessChestData(PATH + _rFileName);
-		_chestSensor.splitFilesByTime();
+		_chestSensor.splitFilesByTime(1);
 	}
 }
