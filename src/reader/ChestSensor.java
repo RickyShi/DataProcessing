@@ -7,9 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 public class ChestSensor {
 
@@ -129,8 +126,8 @@ public class ChestSensor {
 	 * @param wFileName
 	 *            file:
 	 *            0: time; 1: motion; 2: position; 3: BR; 4: HR; 5: Belt
-	 *            Quality;
-	 *            6: ECG Quality; 7: HR Confidence; 8: BR Confidence, 9:Day
+	 *            Quality; 6: ECG Quality; 7: HR Confidence; 8: BR Confidence,
+	 *            9: Skin Temperature(added on 2/26) 10: Day
 	 * @return
 	 */
 	private boolean simpleProcessChestData(String rFileName) {
@@ -157,7 +154,7 @@ public class ChestSensor {
 					toWrite = getStrTime(tmp[0]).concat(",").concat(tmp[1]).concat(",").concat(tmp[2]).concat(",")
 							.concat(tmp[3]).concat(",").concat(tmp[4]).concat(",").concat(tmp[5]).concat(",")
 							.concat(tmp[6]).concat(",").concat(tmp[7]).concat(",").concat(tmp[8]).concat(",")
-							.concat(getDMYDate(tmp[0]));
+							.concat(tmp[9]).concat(",").concat(getDMYDate(tmp[0]));
 					out.write(toWrite);
 					out.newLine();
 				}
@@ -165,11 +162,9 @@ public class ChestSensor {
 			br.close();
 			out.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
@@ -184,7 +179,6 @@ public class ChestSensor {
 			out.write(toWrite);
 			out.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -224,29 +218,34 @@ public class ChestSensor {
 		}
 	}
 
-	private LinkedList<LinkedList<String>> getChestData(String rFileName) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(rFileName)));
-		String data = null;
-		LinkedList<String> arrRow = null;
-		LinkedList<LinkedList<String>> processedData = new LinkedList<LinkedList<String>>();
-		while ((data = br.readLine()) != null) {
-			String[] tmp = data.trim().split(",");
-			if (!tmp[0].equals("time")) {
-				arrRow = new LinkedList<String>(Arrays.asList(tmp));
-				processedData.add(arrRow);
-				Iterator<String> iter = arrRow.iterator();
-				while (iter.hasNext()) {
-					System.out.print(iter.next());
-					System.out.println("");
-				}
-			}
-		}
-		br.close();
-		return processedData;
-	}
-
+	/**
+	 * Below Code Not Used for Now
+	 * private LinkedList<LinkedList<String>> getChestData(String rFileName)
+	 * throws IOException {
+	 * BufferedReader br = new BufferedReader(new InputStreamReader(new
+	 * FileInputStream(rFileName)));
+	 * String data = null;
+	 * LinkedList<String> arrRow = null;
+	 * LinkedList<LinkedList<String>> processedData = new
+	 * LinkedList<LinkedList<String>>();
+	 * while ((data = br.readLine()) != null) {
+	 * String[] tmp = data.trim().split(",");
+	 * if (!tmp[0].equals("time")) {
+	 * arrRow = new LinkedList<String>(Arrays.asList(tmp));
+	 * processedData.add(arrRow);
+	 * Iterator<String> iter = arrRow.iterator();
+	 * while (iter.hasNext()) {
+	 * System.out.print(iter.next());
+	 * System.out.println("");
+	 * }
+	 * }
+	 * }
+	 * br.close();
+	 * return processedData;
+	 * }
+	 **/
 	public static void main(String[] args) throws IOException {
-		String _rFileName = "chestsensor.9999.EQ02_3112228.F_10.txt";
+		String _rFileName = "chestsensor.9999.EQ02_3112228.F_26.txt";
 		ChestSensor _chestSensor = new ChestSensor(_rFileName);
 //		_chestSensor.getChestData(_rFileName);
 		_chestSensor.simpleProcessChestData(PATH + _rFileName);
