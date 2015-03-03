@@ -13,7 +13,7 @@ public class ChestSensor {
 	public static final String PATH = "C:/Users/Ricky/Desktop/Example/";
 	// public static final String SUFFIX = ".txt";
 	public static final String SUFFIX = ".csv";
-	public static final String HEAD = "time,motion,body position,BR derived by Belt,HR derived by ECG,Belt Quality,ECG Quality,HR confidence,BR confidence,Day";
+	public static final String HEAD = "time,motion,body position,BR derived by Belt,HR derived by ECG,Belt Quality,ECG Quality,HR confidence,BR confidence,Skin Temperature,Day";
 	public final String LINEBREAK = System.getProperty("line.separator");
 	private String wFileName;
 
@@ -23,47 +23,6 @@ public class ChestSensor {
 
 	public ChestSensor(String fileName) {
 		wFileName = PATH + fileName + SUFFIX;
-	}
-
-	private String convertMotion(String position) {
-		String rtn = "";
-		switch (position) {
-		case "Stationary":
-			rtn = "1";
-			break;
-		case "MovingSlowly":
-			rtn = "2";
-			break;
-		case "MovingFast":
-			rtn = "3";
-			break;
-		}
-		return rtn;
-	}
-
-	private String convertPosition(String motion) {
-		String rtn = "";
-		switch (motion) {
-		case "Inverted":
-			rtn = "10";
-			break;
-		case "Prone":
-			rtn = "20";
-			break;
-		case "Side":
-			rtn = "30";
-			break;
-		case "Supine":
-			rtn = "40";
-			break;
-		case "Unknown":
-			rtn = "50";
-			break;
-		case "Upright":
-			rtn = "60";
-			break;
-		}
-		return rtn;
 	}
 
 	private void splitFilesByTime(int gapMinute) {
@@ -84,7 +43,7 @@ public class ChestSensor {
 					if (count == 0) {
 						sTime = tmp[0];
 						pTime = tmp[0];
-						day = tmp[9];
+						day = tmp[10];
 						sb.append(data).append(LINEBREAK);
 						eTime = pTime;
 					} else {
@@ -135,7 +94,7 @@ public class ChestSensor {
 		String data;
 		String toWrite;
 		try {
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(rFileName)));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(PATH + rFileName)));
 			BufferedWriter out = new BufferedWriter(new FileWriter(wFileName));
 			out.write(HEAD);
 			out.newLine();
@@ -148,6 +107,9 @@ public class ChestSensor {
 					}
 					if (Double.parseDouble(tmp[7]) <= 0.4 || Double.parseDouble(tmp[4]) >= 180 || Double.parseDouble(tmp[4]) <= 40) {
 						tmp[4] = "N/A";
+					}
+					if (Double.parseDouble(tmp[9]) <= 20) {
+						tmp[9] = "N/A";
 					}
 					tmp[1] = convertMotion(tmp[1]);
 					tmp[2] = convertPosition(tmp[2]);
@@ -171,6 +133,14 @@ public class ChestSensor {
 		return true;
 	}
 
+	private void addSurveyScore(String fileName) {
+		// TODO: add SurveyScore
+
+	}
+
+	private void addDrinkTime(String fileName) {
+		// TODO: add DrinkTime
+	}
 	private void writeMethod(String fileName, String toWrite) {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(fileName));
@@ -218,6 +188,47 @@ public class ChestSensor {
 		}
 	}
 
+	private String convertMotion(String position) {
+		String rtn = "";
+		switch (position) {
+		case "Stationary":
+			rtn = "1";
+			break;
+		case "MovingSlowly":
+			rtn = "2";
+			break;
+		case "MovingFast":
+			rtn = "3";
+			break;
+		}
+		return rtn;
+	}
+
+	private String convertPosition(String motion) {
+		String rtn = "";
+		switch (motion) {
+		case "Inverted":
+			rtn = "10";
+			break;
+		case "Prone":
+			rtn = "20";
+			break;
+		case "Side":
+			rtn = "30";
+			break;
+		case "Supine":
+			rtn = "40";
+			break;
+		case "Unknown":
+			rtn = "50";
+			break;
+		case "Upright":
+			rtn = "60";
+			break;
+		}
+		return rtn;
+	}
+
 	/**
 	 * Below Code Not Used for Now
 	 * private LinkedList<LinkedList<String>> getChestData(String rFileName)
@@ -245,10 +256,10 @@ public class ChestSensor {
 	 * }
 	 **/
 	public static void main(String[] args) throws IOException {
-		String _rFileName = "chestsensor.9999.EQ02_3112228.F_26.txt";
+		String _rFileName = "chestsensor.9998.EQ02_3112228.M_02.txt";
 		ChestSensor _chestSensor = new ChestSensor(_rFileName);
 //		_chestSensor.getChestData(_rFileName);
-		_chestSensor.simpleProcessChestData(PATH + _rFileName);
+		_chestSensor.simpleProcessChestData(_rFileName);
 		_chestSensor.splitFilesByTime(1);
 	}
 }
