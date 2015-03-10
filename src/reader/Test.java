@@ -53,10 +53,7 @@ public class Test {
 		// System.out.println(compareTime("08:28:46", "08:30:51"));
 		// System.out.println(compareTime("08:28:46", "08:38:51"));
 
-		StringBuffer sb = new StringBuffer();
-		sb.append("s");
-		sb.setLength(0);
-		System.out.print(!sb.toString().equals(""));
+		System.out.println(Double.parseDouble("-1"));
 
 	}
 }

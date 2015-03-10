@@ -2,30 +2,31 @@ package reader;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class ChestSensor {
+public class WebChestSensor {
 
 	public static final String PATH = "C:/Users/Ricky/Desktop/Example/";
-	// public static final String SUFFIX = ".txt";
+	public static final String OUT = "OutWeb/";
 	public static final String SUFFIX = ".csv";
 	public static final String HEAD = "time,motion,body position,BR derived by Belt,HR derived by ECG,Belt Quality,ECG Quality,HR confidence,BR confidence,Skin Temperature,Day";
 	public final String LINEBREAK = System.getProperty("line.separator");
 	private String wFileName;
 
-	public ChestSensor() {
-		wFileName = PATH + "Process" + SUFFIX;
+	public WebChestSensor() {
+		wFileName = PATH + OUT + "Process" + SUFFIX;
 	}
 
-	public ChestSensor(String fileName) {
-		wFileName = PATH + fileName + SUFFIX;
+	public WebChestSensor(String fileName) {
+		wFileName = PATH + OUT + fileName + SUFFIX;
 	}
 
-	private void splitFilesByTime(int gapMinute) {
+	public void splitFilesByTime(int gapMinute) {
 		BufferedReader br;
 		String data;
 		StringBuffer sb = new StringBuffer();
@@ -52,7 +53,7 @@ public class ChestSensor {
 						System.out.println("timeP_" + count + ": " + pTime);
 						System.out.println("timeE_" + count + ": " + eTime);
 						if (!compareTime(pTime, eTime, gapMinute)) {
-							String fName = PATH + day + sTime.substring(0, 2) + "-" + eTime.substring(0, 2) + "_" + SUFFIX;
+							String fName = PATH + OUT + day + sTime.substring(0, 2) + "-" + eTime.substring(0, 2) + "_" + SUFFIX;
 							String toWrite = sb.toString();
 							writeMethod(fName,toWrite);
 							System.out.println("count: " + count);
@@ -67,7 +68,7 @@ public class ChestSensor {
 				}
 			}
 			if (!sb.toString().equals("")) {
-				String fName = PATH + day + sTime.substring(0, 2) + "-" + eTime.substring(0, 2) + "_" + SUFFIX;
+				String fName = PATH + OUT + day + sTime.substring(0, 2) + "-" + eTime.substring(0, 2) + "_" + SUFFIX;
 				String toWrite = sb.toString();
 				writeMethod(fName, toWrite);
 			}
@@ -89,12 +90,17 @@ public class ChestSensor {
 	 *            9: Skin Temperature(added on 2/26) 10: Day
 	 * @return
 	 */
-	private boolean simpleProcessChestData(String rFileName) {
+	public boolean simpleProcessChestData(String rFileName) {
 		BufferedReader br;
 		String data;
 		String toWrite;
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(PATH + rFileName)));
+			File myPath = new File(PATH + OUT);
+			if (!myPath.exists()) {
+				myPath.mkdir();
+				System.out.println("create new path: " + PATH + OUT);
+			}
 			BufferedWriter out = new BufferedWriter(new FileWriter(wFileName));
 			out.write(HEAD);
 			out.newLine();
@@ -181,7 +187,7 @@ public class ChestSensor {
 	 * @return
 	 */
 	private boolean compareTime(String sTime, String eTime, int gapMinute) {
-		if (getCalTime(eTime) - getCalTime(sTime) >= gapMinute * 60) {
+		if (Math.abs(getCalTime(eTime) - getCalTime(sTime)) >= gapMinute * 60) {
 			return false;
 		} else {
 			return true;
@@ -257,7 +263,7 @@ public class ChestSensor {
 	 **/
 	public static void main(String[] args) throws IOException {
 		String _rFileName = "chestsensor.9998.EQ02_3112228.M_02.txt";
-		ChestSensor _chestSensor = new ChestSensor(_rFileName);
+		WebChestSensor _chestSensor = new WebChestSensor(_rFileName);
 //		_chestSensor.getChestData(_rFileName);
 		_chestSensor.simpleProcessChestData(_rFileName);
 		_chestSensor.splitFilesByTime(1);
