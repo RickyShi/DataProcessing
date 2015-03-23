@@ -14,7 +14,7 @@ public class WebChestSensor {
 	public static final String PATH = "C:/Users/Ricky/Desktop/Example/";
 	public static final String OUT = "OutWeb/";
 	public static final String SUFFIX = ".csv";
-	public static final String HEAD = "time,motion,body position,BR derived by Belt,HR derived by ECG,Belt Quality,ECG Quality,HR confidence,BR confidence,Skin Temperature,Day";
+	public static final String HEAD = "time,motion,body position,BR derived by Belt,HR derived by ECG,Belt Quality,ECG Quality,HR confidence,BR confidence,Skin Temperature,Day,DF";
 	public final String LINEBREAK = System.getProperty("line.separator");
 	private String wFileName;
 
@@ -109,13 +109,13 @@ public class WebChestSensor {
 				if (!tmp[0].equals("time")) {
 					// check BR/HR Confidence &HR value
 					if (Double.parseDouble(tmp[8]) <= 0.4 || Double.parseDouble(tmp[3]) == 0.0) {
-						tmp[3] = "N/A";
+						tmp[3] = "nan";
 					}
 					if (Double.parseDouble(tmp[7]) <= 0.4 || Double.parseDouble(tmp[4]) >= 180 || Double.parseDouble(tmp[4]) <= 40) {
-						tmp[4] = "N/A";
+						tmp[4] = "nan";
 					}
 					if (Double.parseDouble(tmp[9]) <= 20) {
-						tmp[9] = "N/A";
+						tmp[9] = "nan";
 					}
 					tmp[1] = convertMotion(tmp[1]);
 					tmp[2] = convertPosition(tmp[2]);

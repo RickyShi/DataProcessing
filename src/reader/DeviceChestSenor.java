@@ -11,12 +11,12 @@ import java.io.InputStreamReader;
 
 public class DeviceChestSenor {
 	public static final String ROOT_PATH = "C:/Users/Ricky/Desktop/Example/Craving Study Psychophys Data/";
-	public static final String SUBJECT_PATH = "1004 Psychophys Data/";
+	public static final String SUBJECT_PATH = "1005 Psychophys Data/";
 	public static final String PATH = ROOT_PATH + SUBJECT_PATH;
 	public static final String OUT = "Out/";
 	// public static final String SUFFIX = ".txt";
 	public static final String SUFFIX = ".csv";
-	public static final String HEAD = "time,motion,body position,BR derived by Belt,HR derived by ECG,Belt Quality,ECG Quality,HR confidence,BR confidence,Skin Temperature,Day,Activity";
+	public static final String HEAD = "time,motion,body position,BR derived by Belt,HR derived by ECG,Belt Quality,ECG Quality,HR confidence,BR confidence,Skin Temperature,Day,Activity,DF";
 	public final String LINEBREAK = System.getProperty("line.separator");
 
 	private String wFileName;
@@ -47,31 +47,31 @@ public class DeviceChestSenor {
 			while ((data = br.readLine()) != null) {
 				String[] tmp = data.trim().split(",");
 				System.out.println(data);
-				String time = tmp[10];
+				String time = tmp[9];
 				if (!time.equals("")) {
 					time = time.split("\\.")[0];
 					time = (time.length() == 7) ? "0".concat(time) : time;
-					String date = (tmp[14].equals("")) ? "MISSING_DATE" : tmp[14];
+					String date = (tmp[13].equals("")) ? "MISSING_DATE" : tmp[13];
 					String skin = (tmp[1].equals("")) ? "-1" : tmp[1];
 					String bodyPosition = convertPosition(tmp[2]);
 					String ambulation = convertMotion(tmp[3]);
-					String HRConfidence = (tmp[6].equals("")) ? "-1" : tmp[6];
-					String BRConfidence = (tmp[8].equals("")) ? "-1" : tmp[8];
+					String HRConfidence = (tmp[5].equals("")) ? "-1" : tmp[5];
+					String BRConfidence = (tmp[7].equals("")) ? "-1" : tmp[7];
 					// System.out.println("BR Con: " + BRConfidence);
 
-					String HR = (tmp[15].equals("")) ? "-1" : tmp[15];
-					String BR = (tmp[16].equals("")) ? "-1" : tmp[16];
+					String HR = (tmp[14].equals("")) ? "-1" : tmp[14];
+					String BR = (tmp[15].equals("")) ? "-1" : tmp[15];
 					// System.out.println("BR: " + BR);
 					if (Double.parseDouble(BRConfidence) <= 0.4 || Double.parseDouble(BR) == 0.0 || Double.parseDouble(BR) == -1.0) {
-						BR = "N/A";
+						BR = "nan";
 					}
 					if (Double.parseDouble(HRConfidence) <= 0.4 || Double.parseDouble(HR) >= 180 || Double.parseDouble(HR) <= 40) {
-						HR = "N/A";
+						HR = "nan";
 					}
 					if (Double.parseDouble(skin) <= 20) {
-						skin = "N/A";
+						skin = "nan";
 					}
-					String activity = (tmp[17].equals("")) ? "N/A" : tmp[17];
+					String activity = (tmp[16].equals("")) ? "nan" : tmp[16];
 					;
 					toWrite = time.concat(",").concat(ambulation).concat(",").concat(bodyPosition).concat(",")
 							.concat(BR).concat(",").concat(HR).concat(",").concat("-1").concat(",")
@@ -106,7 +106,7 @@ public class DeviceChestSenor {
 			rtn = "3";
 			break;
 		default:
-			rtn = "N/A";
+			rtn = "nan";
 			break;
 		}
 		return rtn;
@@ -134,7 +134,7 @@ public class DeviceChestSenor {
 			rtn = "60";
 			break;
 		default:
-			rtn = "N/A";
+			rtn = "nan";
 			break;
 		}
 		return rtn;
